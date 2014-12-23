@@ -208,6 +208,9 @@
       <if test="superProcessInstanceId != null">
         and RES.SUPER_PROCESS_INSTANCE_ID_ = #{superProcessInstanceId}
       </if>
+      <if test="endActivityId != null">
+        and RES.END_ACT_ID_ = #{endActivityId}
+      </if>
       <foreach collection="queryVariableValues" index="index" item="queryVariableValue">
         and A${index}.NAME_= #{queryVariableValue.name}
         <if test="!queryVariableValue.type.equals('null')">

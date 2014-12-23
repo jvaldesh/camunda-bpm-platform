@@ -181,6 +181,8 @@ public interface HistoricProcessInstanceQuery extends Query<HistoricProcessInsta
    * instance. {@link ProcessInstance) ids and {@link HistoricProcessInstance}
    * ids match. */
   HistoricProcessInstanceQuery superProcessInstanceId(String superProcessInstanceId);
+  
+  HistoricProcessInstanceQuery endActivityId(String endActivityId);
 
   // below is deprecated and should be removed in 5.12
 

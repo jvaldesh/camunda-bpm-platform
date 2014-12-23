@@ -26,6 +26,7 @@ public class HistoricProcessInstanceDto {
   private Long durationInMillis;
   private String startUserId;
   private String startActivityId;
+  private String endActivityId;
   private String deleteReason;
   private String superProcessInstanceId;
 
@@ -60,6 +61,10 @@ public class HistoricProcessInstanceDto {
   public String getStartActivityId() {
     return startActivityId;
   }
+  
+  public String getEndActivityId() {
+    return endActivityId;
+  }
 
   public String getDeleteReason() {
     return deleteReason;
@@ -81,6 +86,7 @@ public class HistoricProcessInstanceDto {
     dto.durationInMillis = historicProcessInstance.getDurationInMillis();
     dto.startUserId = historicProcessInstance.getStartUserId();
     dto.startActivityId = historicProcessInstance.getStartActivityId();
+    dto.endActivityId = historicProcessInstance.getEndActivityId();
     dto.deleteReason = historicProcessInstance.getDeleteReason();
     dto.superProcessInstanceId = historicProcessInstance.getSuperProcessInstanceId();
 

@@ -50,6 +50,7 @@ public class HistoricProcessInstanceQueryImpl extends AbstractVariableQueryImpl<
   protected Date finishedAfter;
   protected String processDefinitionKey;
   protected Set<String> processInstanceIds;
+  protected String endActivityId;
 
   public HistoricProcessInstanceQueryImpl() {
   }
@@ -151,11 +152,16 @@ public class HistoricProcessInstanceQueryImpl extends AbstractVariableQueryImpl<
   }
 
   public HistoricProcessInstanceQuery superProcessInstanceId(String superProcessInstanceId) {
-	 this.superProcessInstanceId = superProcessInstanceId;
-	 return this;
+    this.superProcessInstanceId = superProcessInstanceId;
+    return this;
+  }
+  
+  public HistoricProcessInstanceQuery endActivityId(String endActivityId) {
+    this.endActivityId = endActivityId;
+    return this;
   }
 
-	public HistoricProcessInstanceQuery orderByProcessInstanceBusinessKey() {
+  public HistoricProcessInstanceQuery orderByProcessInstanceBusinessKey() {
     return orderBy(HistoricProcessInstanceQueryProperty.BUSINESS_KEY);
   }
 
@@ -233,6 +239,13 @@ public class HistoricProcessInstanceQueryImpl extends AbstractVariableQueryImpl<
   }
   public void setSuperProcessInstanceId(String superProcessInstanceId) {
     this.superProcessInstanceId = superProcessInstanceId;
+  }
+  
+  public String getEndActivityId() {
+    return endActivityId;
+  }
+  public void setEndActivityId(String endActivityId) {
+    this.endActivityId = endActivityId;
   }
 
   public List<String> getProcessKeyNotIn() {
