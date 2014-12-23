@@ -273,7 +273,6 @@
         </foreach>      
       </if>
       <if test="candidateUser != null || candidateGroups != null">
-        and RES.ASSIGNEE_ is null
         and I.TYPE_ = 'candidate'
         and 
         ( 
