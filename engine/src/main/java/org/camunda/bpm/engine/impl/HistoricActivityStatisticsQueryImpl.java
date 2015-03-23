@@ -12,13 +12,17 @@
  */
 package org.camunda.bpm.engine.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.history.HistoricActivityStatistics;
 import org.camunda.bpm.engine.history.HistoricActivityStatisticsQuery;
+import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
+import org.camunda.bpm.engine.impl.variable.VariableTypes;
 
 /**
  *
@@ -34,6 +38,7 @@ public class HistoricActivityStatisticsQueryImpl extends AbstractQuery<HistoricA
   protected boolean includeFinished;
   protected boolean includeCanceled;
   protected boolean includeCompleteScope;
+  protected List<QueryVariableValue> variables = new ArrayList<QueryVariableValue>(); 
 
   public HistoricActivityStatisticsQueryImpl(String processDefinitionId, CommandExecutor commandExecutor) {
     super(commandExecutor);
@@ -54,12 +59,25 @@ public class HistoricActivityStatisticsQueryImpl extends AbstractQuery<HistoricA
     includeCompleteScope = true;
     return this;
   }
+  
+  protected void ensureVariablesInitialized() {
+    VariableTypes types = Context.getProcessEngineConfiguration().getVariableTypes();
+    for(QueryVariableValue var : variables) {
+      var.initialize(types);
+    }
+  }
+  
+  public HistoricActivityStatisticsQuery processVariableValueEquals(String variableName, Object variableValue) {
+	  variables.add(new QueryVariableValue(variableName, variableValue, QueryOperator.EQUALS, false));
+	  return this;
+  }
 
   public HistoricActivityStatisticsQuery orderByActivityId() {
     return orderBy(HistoricActivityStatisticsQueryProperty.ACTIVITY_ID_);
   }
 
   public long executeCount(CommandContext commandContext) {
+    ensureVariablesInitialized();
     checkQueryOk();
     return
       commandContext
@@ -68,6 +86,7 @@ public class HistoricActivityStatisticsQueryImpl extends AbstractQuery<HistoricA
   }
 
   public List<HistoricActivityStatistics> executeList(CommandContext commandContext, Page page) {
+    ensureVariablesInitialized();
     checkQueryOk();
     return
       commandContext
@@ -98,6 +117,10 @@ public class HistoricActivityStatisticsQueryImpl extends AbstractQuery<HistoricA
 
   public boolean isIncludeCompleteScope() {
     return includeCompleteScope;
+  }
+  
+  public List<QueryVariableValue> getVariables() {
+    return variables;
   }
 
 }

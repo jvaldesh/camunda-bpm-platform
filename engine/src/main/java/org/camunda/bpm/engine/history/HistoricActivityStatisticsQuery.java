@@ -36,6 +36,14 @@ public interface HistoricActivityStatisticsQuery extends Query<HistoricActivityS
    * which consumed a token and did not produced a new one), in the result.
    */
   HistoricActivityStatisticsQuery includeCompleteScope();
+  
+  /**
+   * Only select historic activities statistics which are part of a process instance which have a variable
+   * with the given name set to the given value. The last variable value in the variable updates
+   * ({@link HistoricDetail}) will be used, so make sure history-level is configured
+   * to full when this feature is used.
+   */
+  HistoricActivityStatisticsQuery processVariableValueEquals(String variableName, Object variableValue);
 
   /**
    * Order by activity id (needs to be followed by {@link #asc()} or {@link #desc()}).

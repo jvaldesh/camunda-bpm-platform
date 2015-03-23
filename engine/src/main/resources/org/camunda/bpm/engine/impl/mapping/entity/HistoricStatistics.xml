@@ -50,16 +50,16 @@
         (
           select distinct ACT_ID_
           from ${prefix}ACT_HI_ACTINST
-          where PROC_DEF_ID_ = #{processDefinitionId}
-          and (END_TIME_ is null
+          where ACT_HI_ACTINST.PROC_DEF_ID_ = #{processDefinitionId}
+          and (ACT_HI_ACTINST.END_TIME_ is null
           <if test="includeFinished">
-          or END_TIME_ is not null
+          or ACT_HI_ACTINST.END_TIME_ is not null
           </if>
           <if test="includeCanceled">
-          or ACT_INST_STATE_ = 2
+          or ACT_HI_ACTINST.ACT_INST_STATE_ = 2
           </if>
           <if test="includeCompleteScope">
-          or ACT_INST_STATE_ = 1
+          or ACT_HI_ACTINST.ACT_INST_STATE_ = 1
           </if>
           )
         ) ACTIVITY
@@ -67,10 +67,39 @@
         left outer join
 
         (
-          select ACT_ID_, count(ACT_ID_) as INSTANCE_COUNT_
+          select ACT_HI_ACTINST.ACT_ID_, count(ACT_HI_ACTINST.ACT_ID_) as INSTANCE_COUNT_
           from ${prefix}ACT_HI_ACTINST
-          where PROC_DEF_ID_ = #{processDefinitionId}
-          and END_TIME_ is null
+          where ACT_HI_ACTINST.PROC_DEF_ID_ = #{processDefinitionId}
+          and ACT_HI_ACTINST.END_TIME_ is null
+          <foreach collection="variables" index="index" item="var">
+          and exists (
+            select HVI.ID_ 
+            from ${prefix}ACT_HI_VARINST HVI 
+            where
+              HVI.NAME_ =  #{var.name}
+              and HVI.PROC_INST_ID_ = ACT_HI_ACTINST.PROC_INST_ID_
+              <if test="!var.type.equals('null')">
+                and HVI.VAR_TYPE_ = #{var.type}
+              </if>
+              <!-- Variable value -->
+              <if test="var.textValue != null &amp;&amp; var.longValue == null &amp;&amp; var.doubleValue == null">
+                and HVI.TEXT_ =  #{var.textValue}
+              </if>
+              <if test="var.textValue2 != null">
+                and HVI.TEXT2_ = #{var.textValue2}
+              </if>
+              <if test="var.longValue != null">
+                and HVI.LONG_ = #{var.longValue}
+              </if>
+              <if test="var.doubleValue != null">
+                and HVI.DOUBLE_ = #{var.doubleValue}
+              </if>
+              <!-- Null variable type -->
+              <if test="var.textValue == null &amp;&amp; var.textValue2 == null &amp;&amp; var.longValue == null &amp;&amp; var.doubleValue == null">
+                and HVI.TEXT_ is null and HVI.TEXT2_ is null and HVI.LONG_ is null and HVI.DOUBLE_ is null and HVI.BYTEARRAY_ID_ is null
+              </if>
+          )
+          </foreach>
           group by ACT_ID_
         ) INSTANCE
         on INSTANCE.ACT_ID_ = ACTIVITY.ACT_ID_
@@ -79,11 +108,11 @@
         left outer join
 
         (
-          select ACT_ID_, count(ACT_ID_) as FINISHED_COUNT_
+          select ACT_HI_ACTINST.ACT_ID_, count(ACT_HI_ACTINST.ACT_ID_) as FINISHED_COUNT_
           from ${prefix}ACT_HI_ACTINST
-          where PROC_DEF_ID_ = #{processDefinitionId}
-          and END_TIME_ is not null
-          group by ACT_ID_
+          where ACT_HI_ACTINST.PROC_DEF_ID_ = #{processDefinitionId}
+          and ACT_HI_ACTINST.END_TIME_ is not null
+          group by ACT_HI_ACTINST.ACT_ID_
         ) FINISHED
         on FINISHED.ACT_ID_ = ACTIVITY.ACT_ID_
         </if>
@@ -94,7 +123,7 @@
         (
           select ACT_ID_, count(ACT_ID_) as CANCELED_COUNT_
           from ${prefix}ACT_HI_ACTINST
-          where PROC_DEF_ID_ = #{processDefinitionId}
+          where ACT_HI_ACTINST.PROC_DEF_ID_ = #{processDefinitionId}
           and ACT_INST_STATE_ = 2
           group by ACT_ID_
         ) CANCELED
@@ -107,7 +136,7 @@
         (
           select ACT_ID_, count(ACT_ID_) as COMPLETE_SCOPE_COUNT_
           from ${prefix}ACT_HI_ACTINST
-          where PROC_DEF_ID_ = #{processDefinitionId}
+          where ACT_HI_ACTINST.PROC_DEF_ID_ = #{processDefinitionId}
           and ACT_INST_STATE_ = 1
           group by ACT_ID_
         ) COMPLETE
