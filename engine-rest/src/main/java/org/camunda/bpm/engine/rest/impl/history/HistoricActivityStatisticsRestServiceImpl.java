@@ -13,14 +13,19 @@
 package org.camunda.bpm.engine.rest.impl.history;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.Status;
 
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.history.HistoricActivityStatistics;
 import org.camunda.bpm.engine.history.HistoricActivityStatisticsQuery;
+import org.camunda.bpm.engine.rest.dto.CamundaQueryParam;
+import org.camunda.bpm.engine.rest.dto.VariableQueryParameterDto;
+import org.camunda.bpm.engine.rest.dto.converter.VariableListConverter;
 import org.camunda.bpm.engine.rest.dto.history.HistoricActivityStatisticsDto;
 import org.camunda.bpm.engine.rest.exception.InvalidRequestException;
 import org.camunda.bpm.engine.rest.history.HistoricActivityStatisticsRestService;
@@ -34,8 +39,10 @@ public class HistoricActivityStatisticsRestServiceImpl implements HistoricActivi
   }
 
   @Override
-  public List<HistoricActivityStatisticsDto> getHistoricActivityStatistics(String processDefinitionId, Boolean includeCanceled, Boolean includeFinished,
-      Boolean includeCompleteScope, String sortBy, String sortOrder) {
+  public List<HistoricActivityStatisticsDto> getHistoricActivityStatistics(String processDefinitionId, 
+		  Boolean includeCanceled, Boolean includeFinished, Boolean includeCompleteScope,
+		  String processVariables,
+		  String sortBy, String sortOrder) {
     HistoryService historyService = processEngine.getHistoryService();
 
     HistoricActivityStatisticsQuery query = historyService.createHistoricActivityStatisticsQuery(processDefinitionId);
@@ -50,6 +57,21 @@ public class HistoricActivityStatisticsRestServiceImpl implements HistoricActivi
 
     if (includeCompleteScope != null && includeCompleteScope) {
       query.includeCompleteScope();
+    }
+    
+    if (processVariables != null) {
+      List<VariableQueryParameterDto> processVariablesList = new VariableListConverter().convertQueryParameterToType(processVariables);
+      for (VariableQueryParameterDto variableQueryParam : processVariablesList) {
+        String variableName = variableQueryParam.getName();
+        String op = variableQueryParam.getOperator();
+        Object variableValue = variableQueryParam.getValue();
+
+        if (op.equals(VariableQueryParameterDto.EQUALS_OPERATOR_NAME)) {
+          query.processVariableValueEquals(variableName, variableValue);
+        } else {
+          throw new InvalidRequestException(Status.BAD_REQUEST, "Invalid variable comparator specified: " + op);
+        }
+      }
     }
 
     setSortOptions(query, sortOrder, sortBy);

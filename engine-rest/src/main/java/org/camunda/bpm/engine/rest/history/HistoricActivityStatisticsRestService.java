@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.camunda.bpm.engine.rest.dto.VariableQueryParameterDto;
 import org.camunda.bpm.engine.rest.dto.history.HistoricActivityStatisticsDto;
 
 /**
@@ -38,6 +39,7 @@ public interface HistoricActivityStatisticsRestService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<HistoricActivityStatisticsDto> getHistoricActivityStatistics(@PathParam("id") String processDefinitionId, @QueryParam("canceled") Boolean includeCanceled,
       @QueryParam("finished") Boolean includeFinished, @QueryParam("completeScope") Boolean includeCompleteScope,
+      @QueryParam("processVariables") String processVariables,
       @QueryParam("sortBy") String sortBy, @QueryParam("sortOrder") String sortOrder);
 
 }
