@@ -18,7 +18,6 @@ import java.util.List;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.history.HistoricActivityStatistics;
 import org.camunda.bpm.engine.history.HistoricActivityStatisticsQuery;
-import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
@@ -67,8 +66,18 @@ public class HistoricActivityStatisticsQueryImpl extends AbstractQuery<HistoricA
     }
   }
   
-  public HistoricActivityStatisticsQuery processVariableValueEquals(String variableName, Object variableValue) {
-	  variables.add(new QueryVariableValue(variableName, variableValue, QueryOperator.EQUALS, false));
+  public HistoricActivityStatisticsQuery processVariableValueEquals(String name, Object value) {
+	  variables.add(new QueryVariableValue(name, value, QueryOperator.EQUALS, false));
+	  return this;
+  }
+  
+  public HistoricActivityStatisticsQuery processVariableValueGreaterThanOrEqual(String name, Object value) {
+	  variables.add(new QueryVariableValue(name, value, QueryOperator.GREATER_THAN_OR_EQUAL, false));
+	  return this;
+  }
+  
+  public HistoricActivityStatisticsQuery processVariableValueLessThanOrEqual(String name, Object value) {
+	  variables.add(new QueryVariableValue(name, value, QueryOperator.LESS_THAN_OR_EQUAL, false));
 	  return this;
   }
 

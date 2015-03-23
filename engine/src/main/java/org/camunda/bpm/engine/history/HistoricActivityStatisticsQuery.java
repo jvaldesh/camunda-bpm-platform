@@ -39,11 +39,21 @@ public interface HistoricActivityStatisticsQuery extends Query<HistoricActivityS
   
   /**
    * Only select historic activities statistics which are part of a process instance which have a variable
-   * with the given name set to the given value. The last variable value in the variable updates
-   * ({@link HistoricDetail}) will be used, so make sure history-level is configured
-   * to full when this feature is used.
+   * with the given name set to the given value.
    */
-  HistoricActivityStatisticsQuery processVariableValueEquals(String variableName, Object variableValue);
+  HistoricActivityStatisticsQuery processVariableValueEquals(String name, Object value);
+  
+  /**
+   * Only select historic activities statistics which are part of a process instance which have a variable
+   * value greater than or equal to the given value.
+   */
+  HistoricActivityStatisticsQuery processVariableValueGreaterThanOrEqual(String name, Object value);
+  
+  /**
+   * Only select historic activities statistics which are part of a process instance which have a variable
+   * value less than or equal to the given value.
+   */
+  HistoricActivityStatisticsQuery processVariableValueLessThanOrEqual(String name, Object value);
 
   /**
    * Order by activity id (needs to be followed by {@link #asc()} or {@link #desc()}).
